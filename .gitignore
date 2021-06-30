@@ -3,3 +3,6 @@
 .venv
 .test
 test.py
+exen/chatcmds.py
+exen/_chatcmds.py
+exen/__init__.py
