@@ -1,4 +1,9 @@
-# Exntensions Engine
+### Extensions Engine
+
+# Requirements
+*[cython => 3.0a7](https://github.com/cython/cython/releases)
+*[balistica => 1.6](https://github.com/efroemling/ballistica/releases) 
 
 # Installing
-Download ballistica from [releases](https://github.com/efroemling/ballistica)
+1. `python setup.py build`
+1. Move generated .pyd file to {BALLISTICA_PATH}/DLLs`
