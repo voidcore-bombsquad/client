@@ -1,0 +1,5 @@
+.vscode
+.trash
+.venv
+.test
+test.py
