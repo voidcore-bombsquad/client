@@ -16,7 +16,7 @@ class SQLBase(ba.Plugin):
     
     def __init__(self, path: str):
         """
-        :path - sqlite3.Connection path
+        :path - str, used for sqlite3.Connection
         """
         self._conn: Optional[sqlite3.Connection] = None
         self._cursor: Optional[sqlite3.Cursor] = None
@@ -32,7 +32,7 @@ class SQLBase(ba.Plugin):
         except sqlite3.OperationalError as e:
             ba.print_exception(e)
 
-    def __getitem__(self, item: int) -> Any:
+    def __getitem__(self, item: int):
         """
         Fetch items from sqlite3.Cursor and returns
         specific item

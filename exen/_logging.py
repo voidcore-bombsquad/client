@@ -18,17 +18,18 @@ class Log(Plugin):
 
     def __init__(self, path: str):
         """
-        :path - logging.FileHandler path
+        :path - str, used for logging.FileHandler
         """
         self._logger: Optional[logging.Logger] = None
         self._formatter: Optional[logging.Formatter] = None
         self._handler: Optional[logging.FileHandler] = None
         self._path = path
 
-    def __getattr__(self, item) -> Any:
-        if item in vars(self):
-            return getattr(self.logger, item)
-        return getattr(self, item)
+    def __getattr__(self, item: str):
+        """
+        :item - str, return selected attribute of self.logger
+        """
+        return getattr(self.logger, item)
 
     @property
     def logger(self) -> logging.Logger:

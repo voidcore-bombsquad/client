@@ -2,22 +2,46 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Callable, List, Any
+    from typing import Type, Callable, List, Any
 
 from argparse import ArgumentParser, ArgumentError
-from inspect import isfunction
 from dataclasses import dataclass
+from inspect import isfunction
+
+
+__all__ = ['Command']
+
+
+class _empty:
+    pass
+
+
+class Parser(ArgumentParser):
+    # TODO: wait for Python 3.9
+    def error(self, message: str) -> None:
+        raise ArgumentError(message)
 
 
 class Command:
+    """Parent class for ChatCommands"""
 
-    def __init__(self, name: str, desc: str, keys: List[str], call: Callable):
-        self._name = name
-        self._desc = desc
-        self._keys = keys
+    def __init__(self,
+          call: Callable,
+          name: str = None, 
+          desc: str = None, 
+          keys: List[str] = None):
+        """
+        :call - Callable
+        :name - str, default call.__name__
+        :desc - str, default call.__doc__
+        :keys - str, default [call.__name__]
+
+        """
         self._call = call
-        self._parser: ArgumentParser = ArgumentParser(prog=self.name, 
-            description=self.desc, exit_on_error=False)
+        self._name = name if name else call.__name__
+        self._desc = desc if desc else call.__doc__
+        self._keys = keys if keys else [self.name]
+        self._parser: Parser = Parser(prog=self.name, description=self.desc)
 
     def __contains__(self, item: str):
         return item in self.keys or item == self.name
@@ -39,18 +63,27 @@ class Command:
 
     @property
     def parser(self) -> Callable:
-        assert isinstance(self._parser, ArgumentParser)
+        assert isinstance(self._parser, Parser)
         return self._parser
 
     @property
     def call(self) -> Callable:
         assert isfunction(self._call)
         return self._call
+    
+    @property
+    def empty(self) -> Type[_empty]:
+        return _empty
 
     def execute(self, args: List[str], sender: dataclass) -> Any:
-        del sender
-        try:
-            kwargs = vars(self._parser.parse_args(args))
-        except ArgumentError:
-            kwargs = {}
-        return self._call(**kwargs)
+        """
+        Parse args without exception handling
+        
+        :args - List[str]
+        :sender - dataclass
+        """
+        kwargs = vars(self._parser.parse_args(args))
+        for k, v in vars(sender):
+            if k in kwargs and kwargs[k] is self.empty:
+                kwargs[k] = v
+        return self.call(**kwargs)     

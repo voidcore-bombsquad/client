@@ -3,7 +3,6 @@ from sys import maxsize
 
 
 class Permissions(IntEnum):
-    NOBODY: int = 0
     USER: int = 1
     VIP: int = 2
     ADM: int = 4
@@ -12,4 +11,7 @@ class Permissions(IntEnum):
     UNIQUE: int = maxsize
 
     def __str__(self):
-        return self.value
+        return self.name
+
+    def __repr__(self):
+        return '%s (%s)' % (self.name, self.value)
