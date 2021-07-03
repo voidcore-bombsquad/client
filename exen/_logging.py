@@ -18,7 +18,7 @@ class Log(Plugin):
 
     def __init__(self, path: str):
         """
-        :path - str, used for logging.FileHandler
+        :path - str
         """
         self._logger: Optional[logging.Logger] = None
         self._formatter: Optional[logging.Formatter] = None
@@ -27,7 +27,9 @@ class Log(Plugin):
 
     def __getattr__(self, item: str):
         """
-        :item - str, return selected attribute of self.logger
+        Returns selected attribute of Log.logger
+
+        item: str
         """
         return getattr(self.logger, item)
 

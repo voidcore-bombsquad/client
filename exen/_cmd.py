@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Type, Callable, List, Any
+    from typing import Type, Callable, Any, List
 
 from argparse import ArgumentParser, ArgumentError
 from dataclasses import dataclass
@@ -22,8 +22,8 @@ class Parser(ArgumentParser):
         raise ArgumentError(message)
 
 
-class Command:
-    """Parent class for ChatCommands"""
+class Command(list):
+    """Parent class of ChatCommands"""
 
     def __init__(self,
           call: Callable,
@@ -31,20 +31,16 @@ class Command:
           desc: str = None, 
           keys: List[str] = None):
         """
-        :call - Callable
-        :name - str, default call.__name__
-        :desc - str, default call.__doc__
-        :keys - str, default [call.__name__]
-
+        call: Callable 
+        name: str = None
+        desc: str = None
+        keys: Tuple[str] = None
         """
         self._call = call
         self._name = name if name else call.__name__
         self._desc = desc if desc else call.__doc__
-        self._keys = keys if keys else [self.name]
         self._parser: Parser = Parser(prog=self.name, description=self.desc)
-
-    def __contains__(self, item: str):
-        return item in self.keys or item == self.name
+        super().__init__(keys if keys else [self.name])
 
     @property
     def name(self) -> str:
@@ -55,11 +51,6 @@ class Command:
     def desc(self) -> str:
         assert isinstance(self._desc, str)
         return self._desc[:32]
-
-    @property
-    def keys(self):
-        assert isinstance(self._keys, list)
-        return self._keys
 
     @property
     def parser(self) -> Callable:
@@ -75,15 +66,15 @@ class Command:
     def empty(self) -> Type[_empty]:
         return _empty
 
-    def execute(self, args: List[str], sender: dataclass) -> Any:
+    def execute(self, sender: dataclass, *args) -> Any:
         """
         Parse args without exception handling
         
-        :args - List[str]
-        :sender - dataclass
+        args: Tuple[str]
+        sender: dataclass
         """
         kwargs = vars(self._parser.parse_args(args))
-        for k, v in vars(sender):
+        for k, v in vars(sender).items():
             if k in kwargs and kwargs[k] is self.empty:
                 kwargs[k] = v
         return self.call(**kwargs)     

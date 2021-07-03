@@ -16,7 +16,7 @@ class SQLBase(ba.Plugin):
     
     def __init__(self, path: str):
         """
-        :path - str, used for sqlite3.Connection
+        path: str
         """
         self._conn: Optional[sqlite3.Connection] = None
         self._cursor: Optional[sqlite3.Cursor] = None
@@ -25,6 +25,9 @@ class SQLBase(ba.Plugin):
     def __call__(self, *args, **kwargs) -> bool:
         """
         Execute sql-string in sqlite3.Cursor
+
+        *args
+        **kwargs
         """
         try:
             self.cursor.execute(*args, **kwargs)
@@ -37,13 +40,13 @@ class SQLBase(ba.Plugin):
         Fetch items from sqlite3.Cursor and returns
         specific item
 
-        :item - int
+        item: int
         """
         return self.cursor.fetchall()[item]
 
     def _sqlbase_init_(self) -> None:
         """
-        Initializates 'default' tables for chat commands
+        Initializates 'default' sqlbase for chat commands
         """
         self('CREATE TABLE IF NOT EXISTS permissions ('
             'account_id TEXT NOT NULL PRIMARY KEY,'   
