@@ -2,28 +2,29 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, Any
-
-from ba import Plugin
+    from typing import Optional
 
 import logging
 import os
+import ba
 
 
-class Log(Plugin):
+class Log(ba.Plugin):
     """
-    Subsystem of Extensions Engine
-    Provides logging feature
+    Provides logging feature for chat commands
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: str = None):
         """
-        :path - str
+        path: str = None
         """
         self._logger: Optional[logging.Logger] = None
         self._formatter: Optional[logging.Formatter] = None
         self._handler: Optional[logging.FileHandler] = None
-        self._path = path
+        if path:
+            self._path = path
+        else:
+            self._path = ba.app.config.get('Log Path', 'temp.log')
 
     def __getattr__(self, item: str):
         """

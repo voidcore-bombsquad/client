@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, Any
+    from typing import Optional
 
 import sqlite3
 import ba
@@ -14,13 +14,16 @@ class SQLBase(ba.Plugin):
     Typically used with chat commands
     """
     
-    def __init__(self, path: str):
+    def __init__(self, path: str = None):
         """
-        path: str
+        path: str = None
         """
         self._conn: Optional[sqlite3.Connection] = None
         self._cursor: Optional[sqlite3.Cursor] = None
-        self._path = path
+        if path:
+            self._path = path
+        else:
+            self._path = ba.app.config.get('SQLBase Path', 'data.db')
 
     def __call__(self, *args, **kwargs) -> bool:
         """

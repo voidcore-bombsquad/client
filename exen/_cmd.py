@@ -66,15 +66,18 @@ class Command(list):
     def empty(self) -> Type[_empty]:
         return _empty
 
-    def execute(self, sender: dataclass, *args) -> Any:
+    def execute(self, args: List[str], sender: dataclass) -> Any:
         """
-        Parse args without exception handling
-        
-        args: Tuple[str]
+        Parse args
+
+        args: List[str]
         sender: dataclass
         """
-        kwargs = vars(self._parser.parse_args(args))
-        for k, v in vars(sender).items():
-            if k in kwargs and kwargs[k] is self.empty:
-                kwargs[k] = v
-        return self.call(**kwargs)     
+        try:
+            kwargs = vars(self._parser.parse_args(args))
+            for k, v in vars(sender).items():
+                if k in kwargs and kwargs[k] is self.empty:
+                    kwargs[k] = v
+            return self.call(**kwargs)
+        except ArgumentError:
+            return None
