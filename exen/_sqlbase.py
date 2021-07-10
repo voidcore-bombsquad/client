@@ -4,11 +4,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
+from ._plugin import KeyPlugin
+
 import sqlite3
 import ba
 
 
-class SQLBase(ba.Plugin):
+class SQLBase(KeyPlugin):
     """
     Subsystem plugin of Extensions Engine
     Typically used with chat commands
@@ -18,6 +20,7 @@ class SQLBase(ba.Plugin):
         """
         path: str = None
         """
+        super().__init__('Enable Cmds')
         self._conn: Optional[sqlite3.Connection] = None
         self._cursor: Optional[sqlite3.Cursor] = None
         if path:

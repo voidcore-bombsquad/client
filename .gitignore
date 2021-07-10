@@ -2,16 +2,7 @@
 .vscode
 .venv
 
-# testing
-.trash
-.test
-test.py
-
-# setup.py leftovers
-build
-*.c
-
-# code is just resting here ;)
+# python leftovers
 __pycache__
-exen/chatcmds.py
 exen/__init__.py
+exen/_chatcmds.py

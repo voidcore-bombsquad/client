@@ -4,12 +4,14 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
+from ._plugin import KeyPlugin
+
 import logging
 import os
 import ba
 
 
-class Log(ba.Plugin):
+class Log(KeyPlugin):
     """
     Provides logging feature for chat commands
     """
@@ -18,6 +20,7 @@ class Log(ba.Plugin):
         """
         path: str = None
         """
+        super().__init__('Enable Cmds')
         self._logger: Optional[logging.Logger] = None
         self._formatter: Optional[logging.Formatter] = None
         self._handler: Optional[logging.FileHandler] = None
