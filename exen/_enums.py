@@ -1,14 +1,15 @@
 from enum import IntEnum
-from sys import maxsize
 
 
-class Permissions(IntEnum):
-    USER: int = 1
+class Permission(IntEnum):
+    UNIQUE = -1
+    ROOT = 0
+    RULER: int = 1
     VIP: int = 2
-    ADM: int = 4
-    MOD: int = 8
-    OWN: int = 16
-    UNIQUE: int = maxsize
+    USER: int = 4
+
+    def __gt__(self, value: int) -> bool:
+        return bool(self.value - value < 1)
 
     def __str__(self):
         return self.name

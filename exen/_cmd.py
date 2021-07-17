@@ -2,17 +2,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Type, Callable, List
+    from typing import Type, Callable, List, Any
+    from dataclasses import dataclass
 
 from argparse import ArgumentParser, ArgumentError
-from dataclasses import dataclass
 from inspect import isfunction
-
 
 __all__ = ['Command']
 
 
-class _empty:
+class _sender:
     pass
 
 
@@ -25,7 +24,7 @@ class Parser(ArgumentParser):
 class Command:
     """Parent class of ChatCommands"""
 
-    def __init__(self,
+    def __init__(self, 
           call: Callable,
           name: str = None, 
           desc: str = None, 
@@ -42,21 +41,23 @@ class Command:
         self._keys = keys if keys else [self.name]
         self._parser: Parser = Parser(prog=self.name, description=self.desc)
 
-    def __call__(self, args: List[str], sender: dataclass):
+    def __call__(self, args: List[str], sender: dataclass) -> Any:
         """
         Parse args
 
         args: List[str]
         sender: dataclass
         """
-        try:
-            kwargs = vars(self._parser.parse_args(args))
-            for k, v in vars(sender).items():
-                if k in kwargs and kwargs[k] is self.empty:
-                    kwargs[k] = v
-            return self.call(**kwargs)
-        except ArgumentError:
-            return None
+        kwargs = vars(self._parser.parse_args(args))
+        for k, v in vars(sender).items():
+            if k in kwargs and kwargs[k] is self.from_sender:
+                kwargs[k] = v
+        return self.call(**kwargs)
+
+    @property
+    def call(self) -> Callable:
+        assert isfunction(self._call)
+        return self._call
 
     @property
     def name(self) -> str:
@@ -74,15 +75,10 @@ class Command:
         return self._keys
 
     @property
-    def parser(self) -> Callable:
+    def parser(self) -> Parser:
         assert isinstance(self._parser, Parser)
         return self._parser
 
     @property
-    def call(self) -> Callable:
-        assert isfunction(self._call)
-        return self._call
-    
-    @property
-    def empty(self) -> Type[_empty]:
-        return _empty
+    def from_sender(self) -> Type[_sender]:
+        return _sender

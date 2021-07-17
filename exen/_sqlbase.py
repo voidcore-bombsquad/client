@@ -4,29 +4,22 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
-from ._plugin import KeyPlugin
-
 import sqlite3
-import ba
 
 
-class SQLBase(KeyPlugin):
+class SQLBase:
     """
     Subsystem plugin of Extensions Engine
     Typically used with chat commands
     """
     
-    def __init__(self, path: str = None):
+    def __init__(self, path: str):
         """
-        path: str = None
+        path: str
         """
-        super().__init__('Enable Cmds')
         self._conn: Optional[sqlite3.Connection] = None
         self._cursor: Optional[sqlite3.Cursor] = None
-        if path:
-            self._path = path
-        else:
-            self._path = ba.app.config.get('SQLBase Path', 'data.db')
+        self._path = path
 
     def __call__(self, *args, **kwargs) -> bool:
         """
@@ -39,7 +32,9 @@ class SQLBase(KeyPlugin):
             self.cursor.execute(*args, **kwargs)
             return True
         except sqlite3.OperationalError as e:
-            ba.print_exception(e)
+            from ba import print_exception
+
+            print_exception(e)
 
     def __getitem__(self, item: int):
         """

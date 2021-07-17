@@ -4,30 +4,23 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
-from ._plugin import KeyPlugin
-
 import logging
 import os
-import ba
 
 
-class Log(KeyPlugin):
+class Log:
     """
-    Provides logging feature for chat commands
+    Provides logging feature
     """
 
-    def __init__(self, path: str = None):
+    def __init__(self, path: str):
         """
-        path: str = None
+        path: str
         """
-        super().__init__('Enable Cmds')
         self._logger: Optional[logging.Logger] = None
         self._formatter: Optional[logging.Formatter] = None
         self._handler: Optional[logging.FileHandler] = None
-        if path:
-            self._path = path
-        else:
-            self._path = ba.app.config.get('Log Path', 'temp.log')
+        self._path = path
 
     def __getattr__(self, item: str):
         """
